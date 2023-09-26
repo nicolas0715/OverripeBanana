@@ -4,3 +4,23 @@ main {
     justify-content: space-around;
 }
 
+#carouselExampleAutoplaying {
+    width: 300px; /* Cambia el valor según tus necesidades */
+    height: 500px;
+}
+
+#carouselExampleAutoplaying2 {
+    width: 300px; /* Cambia el valor según tus necesidades */
+    height: 500px;
+}
+
+.main_landing{
+    padding-top: 50px;
+}
+
+.container{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    margin: 0px 10%;
+}

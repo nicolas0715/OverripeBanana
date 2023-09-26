@@ -45,7 +45,7 @@
 {% block main %}
 <h1>PELICULAS</h1>
     <main>
-        {% for pelicula in pelis %}
+        {% for pelicula in peliculas %}
         <div class="card text-center" style="width: 18rem; margin: 20px 0px;">
             <img src="{{ pelicula.Imagen }}" class="card-img-top" alt="">
             <div class="card-body">
@@ -58,5 +58,24 @@
         {% endfor %}
     </main>
 {% endblock %}
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+// Obtén la URL actual
+var currentURL = window.location.pathname;
+
+// Agrega una barra diagonal al principio si no la tiene
+if (!currentURL.startsWith('/')) {
+    currentURL = '/' + currentURL;
+}
+
+// Busca el enlace que coincide con la URL actual y añade la clase "active"
+$("nav ul li a").each(function() {
+    if ($(this).attr("href") == currentURL) {
+        $(this).addClass("active");
+    }
+});
+</script>
+
 </body>
 </html>

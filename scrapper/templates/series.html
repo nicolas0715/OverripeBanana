@@ -46,14 +46,14 @@
 
     <main>
         
-        {% for pelicula in pelis %}
-        <div class="card text-center" style="width: 18rem;">
-            <img src="{{ pelicula.Imagen }}" class="card-img-top" alt="">
+        {% for serie in series %}
+        <div class="card text-center" style="width: 18rem; margin: 20px 0px;">
+            <img src="{{ serie.Imagen }}" class="card-img-top" alt="">
             <div class="card-body">
-                <h4 class="card-text">{{ pelicula.Nombre_pelicula }}</h4>
-                <h5 class="card-text">{{ pelicula.Fecha_streaming }}</h5>
-                <span>Criticas: {{ pelicula.Criticsscore }}</span>
-                <span>Audiencia: {{ pelicula.Audiencescore }}</span>
+                <h4 class="card-text">{{ serie.Nombre_serie }}</h4>
+                <h5 class="card-text">{{ serie.Fecha_streaming }}</h5>
+                <span>Criticas: {{ serie.Criticsscore }}</span>
+                <span>Audiencia: {{ serie.Audiencescore }}</span>
             </div>
         </div>
         {% endfor %}
