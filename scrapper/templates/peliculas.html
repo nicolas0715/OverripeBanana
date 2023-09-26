@@ -1,0 +1,62 @@
+{% extends "landing_page.html" %}
+{% load static %}
+
+<link rel="stylesheet" href="{% static 'css/landing.css' %}">
+{% block title%}Peliculas | Recomendadas{% endblock %}
+
+{% block navbar1 %}
+<nav>
+    <ul class="nav nav-tabs justify-content-center">
+        <li class="nav-item">
+            <a class="nav-link active" href="{% url 'tipo_view' tipo='pelicula' %}">Peliculas</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link " href="{% url 'tipo_view' tipo='serie' %}">Series</a>
+        </li>
+    </ul>
+</nav>
+{% endblock %}
+
+{% block navbar2 %}
+    <nav>
+        <ul class="nav nav-underline nav-fill">
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'stream_view' tipo='pelicula' stream='netflix' %}">Netflix</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'stream_view' tipo='pelicula' stream='amazon_prime' %}">Prime Video</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'stream_view' tipo='pelicula' stream='disney_plus' %}">Disney+</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'stream_view' tipo='pelicula' stream='max_us' %}">Max</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'stream_view' tipo='pelicula' stream='paramount_plus' %}">Paramount</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'stream_view' tipo='pelicula' stream='apple_tv_us' %}">Apple TV</a>
+            </li>
+        </ul>
+    </nav>
+{% endblock %}
+
+{% block main %}
+<h1>PELICULAS</h1>
+    <main>
+        {% for pelicula in pelis %}
+        <div class="card text-center" style="width: 18rem; margin: 20px 0px;">
+            <img src="{{ pelicula.Imagen }}" class="card-img-top" alt="">
+            <div class="card-body">
+                <h4 class="card-text">{{ pelicula.Nombre_pelicula }}</h4>
+                <h5 class="card-text">{{ pelicula.Fecha_streaming }}</h5>
+                <span>Criticas: {{ pelicula.Criticsscore }}</span>
+                <span>Audiencia: {{ pelicula.Audiencescore }}</span>
+            </div>
+        </div>
+        {% endfor %}
+    </main>
+{% endblock %}
+</body>
+</html>
