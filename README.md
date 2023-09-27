@@ -4,3 +4,7 @@
 
 ### La idea es hacer una web con registro de usuario para poder administrar las series y peliculas que ya viste.
 ### Quizas hasta poder calificarlas.
+
+
+### Para instalarlo:
+* Primero,
