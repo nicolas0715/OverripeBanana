@@ -41,10 +41,58 @@
         </ul>
     </nav>
 {% endblock %}
-
 {% block main %}
-<h1>PELICULAS</h1>
+    <p class="d-inline-flex gap-1">
+        <button type="button" class="btn btn-light" data-bs-toggle="collapse" data-bs-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
+            Filtros
+        </button>
+    </p>
+    <div class="collapse" id="collapseExample">
+        <div class="card card-body">
+            <div class="container text-center">
+                <div class="row">
+                    <div class="col-4">
+                        <div class="row">
+                            <label for="">Critica</label>
+                            <input type="text">
+                        </div>
+                        <div class="row">
+                            <label for="">Audiencia</label>
+                            <input type="text">
+                        </div>
+                        <div class="row">
+                            <label for="">Usuario</label>
+                            <input type="text">
+                        </div>
+                    </div>
+                    <div class="col-4">
+                        <div class="row">
+                            <label for="">Fecha</label>
+                            <input type="text">
+                        </div>
+                    </div>
+                    <div class="col-4">
+                        <div class="row">
+                            <label for="">Streamming</label>
+                            <select>
+                                <option value="opcion1"> </option>
+                                <option value="opcion1">Netflix</option>
+                                <option value="opcion2">Prime Video</option>
+                                <option value="opcion3">Disney+</option>
+                                <option value="opcion1">Max</option>
+                                <option value="opcion2">Paramount</option>
+                                <option value="opcion3">Apple TV</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <h1>PELICULAS</h1>
     <main>
+        
         {% for pelicula in peliculas %}
         <div class="card text-center" style="width: 18rem; margin: 20px 0px;">
             <img src="{{ pelicula.Imagen }}" class="card-img-top" alt="">
@@ -77,5 +125,5 @@ $("nav ul li a").each(function() {
 });
 </script>
 
-</body>
+    </body>
 </html>
