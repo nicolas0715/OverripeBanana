@@ -1,4 +1,5 @@
 from django.shortcuts import render
+from django.http import HttpResponse
 
 from bs4 import BeautifulSoup
 import requests
@@ -48,7 +49,10 @@ def tipo_view(request, tipo):
     elif tipo == 'serie':
         print(scrap('https://www.rottentomatoes.com/browse/movies_at_home/?page=5', 'serie'))
         return render(request, 'series.html', scrap('https://www.rottentomatoes.com/browse/tv_series_browse/?page=5', 'serie'))
-
+    else:
+        # Manejar casos no válidos, por ejemplo, devolviendo un mensaje de error
+        return HttpResponse("Tipo no válido: " + tipo, status=400)
+    
 def stream_view(request, tipo, stream):
     if tipo == 'pelicula':
         return render(request, 'peliculas.html', scrap(f"https://www.rottentomatoes.com/browse/movies_at_home/affiliates:{str(stream)}?page=5", 'pelicula'))
@@ -78,8 +82,17 @@ def scrap(url, tipo):
                 # Si no se encuentra, asigna un valor por defecto
                 fecha_streaming = '-'
             imagen = elemento.find('img')['src']
-            criticsscore = elemento.find('score-pairs')['criticsscore']
-            audiencescore = elemento.find('score-pairs')['audiencescore']
+            criticsscore_tag = elemento.find('score-pairs')
+            if criticsscore_tag:
+                criticsscore = criticsscore_tag.get('criticsscore')
+            else:
+                criticsscore = '-'
+                
+            audiencescore_tag = elemento.find('score-pairs')
+            if criticsscore_tag:
+                audiencescore = audiencescore_tag.get('audiencescore')
+            else:
+                audiencescore = '-'
 
             pelicula = {
                 'Nombre_pelicula': nombre_pelicula,
@@ -104,8 +117,16 @@ def scrap(url, tipo):
                 # Si no se encuentra, asigna un valor por defecto
                 fecha_streaming = '-'
             imagen = elemento.find('img')['src']
-            criticsscore = elemento.find('score-pairs')['criticsscore']
-            audiencescore = elemento.find('score-pairs')['audiencescore']
+            criticsscore_tag = elemento.find('score-pairs')
+            if criticsscore_tag:
+                criticsscore = criticsscore_tag.get('criticsscore')
+            else:
+                criticsscore = '-'
+            audiencescore_tag = elemento.find('score-pairs')
+            if criticsscore_tag:
+                audiencescore = audiencescore_tag.get('audiencescore')
+            else:
+                audiencescore = '-'
 
             serie = {
                 'Nombre_serie': nombre_serie,
@@ -118,3 +139,10 @@ def scrap(url, tipo):
             # Agrega el diccionario a la lista de datos de películas
             datos_series.append(serie)
         return {'series': datos_series}
+
+
+def login(request):
+    return render(request, 'login.html')
+
+def signup(request):
+    return render(request, 'signup.html')

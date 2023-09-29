@@ -1,0 +1,42 @@
+{% extends "landing_page.html" %}
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    {% block title%}Sign Up{% endblock %}
+</head>
+<body>
+    {% block navbar1 %}
+    {% endblock %}
+
+    {% block navbar2 %}
+    {% endblock %}
+    
+    {% block main %}
+    <h1>Registrarse</h1>
+    <form action="">
+        <div class="container">
+            <div class="col-6">
+                <div class="row">
+                    <label for="">Nombre y Apellido</label>
+                    <input type="text">
+                </div>
+                <div class="row">
+                    <label for="">Email</label>
+                    <input type="text">
+                </div>
+                <div class="row">
+                    <label for="">Contrasena</label>
+                    <input type="text">
+                </div>
+                <div class="row">
+                    <button>Sign Up</button>
+                </div>
+            </div>
+        </div>
+    </form>
+    {% endblock %}
+</body>
+</html>
