@@ -8,3 +8,12 @@
 
 ### Para instalarlo:
 * Primero,
+* Segundo:
+* Tercero:
+
+
+### Para hacer:
+* Definir la estructura de la base de datos. (Empece con el diagrama)
+* Definir la idea de poder agregar pelis o series a una lista de favoritos. (CRUD)
+* Definir la idea de poder marcar cuales peliculas o series ya he visto.
+* Terminar de definir los modelos de: Peliculas, Series y Usuarios.
