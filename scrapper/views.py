@@ -1,6 +1,8 @@
 from django.shortcuts import render
 from django.http import HttpResponse
 
+from .forms import UserRegistrationForm
+
 from bs4 import BeautifulSoup
 import requests
 
@@ -44,10 +46,8 @@ contexto = {
 
 def tipo_view(request, tipo):
     if tipo == 'pelicula':
-        print(scrap('https://www.rottentomatoes.com/browse/movies_at_home/?page=5', 'pelicula'))
         return render(request, 'peliculas.html', scrap('https://www.rottentomatoes.com/browse/movies_at_home/?page=5', 'pelicula'))
     elif tipo == 'serie':
-        print(scrap('https://www.rottentomatoes.com/browse/movies_at_home/?page=5', 'serie'))
         return render(request, 'series.html', scrap('https://www.rottentomatoes.com/browse/tv_series_browse/?page=5', 'serie'))
     else:
         # Manejar casos no válidos, por ejemplo, devolviendo un mensaje de error
@@ -64,13 +64,14 @@ def scrap(url, tipo):
     html_content = response.content
 
     soup = BeautifulSoup(html_content, "html.parser")
-
+    
     #divs = soup.find_all('div', class_='js-tile-link')
     #links = soup.find_all('a', class_='js-tile-link')
     elementos = soup.select('div.js-tile-link, a.js-tile-link')
-
+    
     datos_peliculas = []
     datos_series = []
+    
     if tipo == 'pelicula':
         for elemento in elementos:
             # Extrae los datos que necesitas de cada etiqueta
@@ -82,14 +83,14 @@ def scrap(url, tipo):
                 # Si no se encuentra, asigna un valor por defecto
                 fecha_streaming = '-'
             imagen = elemento.find('img')['src']
-            criticsscore_tag = elemento.find('score-pairs')
-            if criticsscore_tag:
+            criticsscore_tag = elemento.find('score-pairs-deprecated')
+            if criticsscore_tag and criticsscore_tag.get('criticsscore') != '':
                 criticsscore = criticsscore_tag.get('criticsscore')
             else:
                 criticsscore = '-'
                 
-            audiencescore_tag = elemento.find('score-pairs')
-            if criticsscore_tag:
+            audiencescore_tag = elemento.find('score-pairs-deprecated')
+            if audiencescore_tag and audiencescore_tag.get('audiencescore') != '':
                 audiencescore = audiencescore_tag.get('audiencescore')
             else:
                 audiencescore = '-'
@@ -117,12 +118,12 @@ def scrap(url, tipo):
                 # Si no se encuentra, asigna un valor por defecto
                 fecha_streaming = '-'
             imagen = elemento.find('img')['src']
-            criticsscore_tag = elemento.find('score-pairs')
+            criticsscore_tag = elemento.find('score-pairs-deprecated')
             if criticsscore_tag:
                 criticsscore = criticsscore_tag.get('criticsscore')
             else:
                 criticsscore = '-'
-            audiencescore_tag = elemento.find('score-pairs')
+            audiencescore_tag = elemento.find('score-pairs-deprecated')
             if criticsscore_tag:
                 audiencescore = audiencescore_tag.get('audiencescore')
             else:
@@ -145,4 +146,11 @@ def login(request):
     return render(request, 'login.html')
 
 def signup(request):
-    return render(request, 'signup.html')
+    if request.method == 'POST':
+        form = UserRegistrationForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            return render(request, 'landing_page.html')
+    else:
+        form = UserRegistrationForm()
+        return render(request, 'signup.html', {'form': form})

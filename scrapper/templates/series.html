@@ -13,31 +13,29 @@
         </li>
     </ul>
 </nav>
-{% endblock %}
 
-{% block navbar2 %}
-    <nav>
-        <ul class="nav nav-underline nav-fill">
-            <li class="nav-item">
-                <a class="nav-link" href="{% url 'stream_view' tipo='serie' stream='netflix' %}">Netflix</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="{% url 'stream_view' tipo='serie' stream='amazon_prime' %}">Prime Video</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="{% url 'stream_view' tipo='serie' stream='disney_plus' %}">Disney+</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="{% url 'stream_view' tipo='serie' stream='max_us' %}">Max</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="{% url 'stream_view' tipo='serie' stream='paramount_plus' %}">Paramount</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="{% url 'stream_view' tipo='serie' stream='apple_tv_us' %}">Apple TV</a>
-            </li>
-        </ul>
-    </nav>
+<nav>
+    <ul class="nav nav-underline nav-fill">
+        <li class="nav-item">
+            <a class="nav-link" href="{% url 'stream_view' tipo='pelicula' stream='netflix' %}">Netflix</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="{% url 'stream_view' tipo='pelicula' stream='amazon_prime' %}">Prime Video</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="{% url 'stream_view' tipo='pelicula' stream='disney_plus' %}">Disney+</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="{% url 'stream_view' tipo='pelicula' stream='max_us' %}">Max</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="{% url 'stream_view' tipo='pelicula' stream='paramount_plus' %}">Paramount</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="{% url 'stream_view' tipo='pelicula' stream='apple_tv_us' %}">Apple TV</a>
+        </li>
+    </ul>
+</nav>
 {% endblock %}
 
 {% block main %}
