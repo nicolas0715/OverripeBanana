@@ -1,0 +1,22 @@
+{% extends "home.html" %}
+
+{% block title%}Cambiar Contrasena{% endblock %}
+
+{% block navbar1 %}
+{% endblock %}
+
+{% block main %}
+
+    <h1>Cambiar Constrasena</h1>
+    <h2>{{ usuario }}</h2>
+
+    <form action="" method='POST'>
+        {% csrf_token %}
+
+        <table>
+            {{ form.as_table}}
+        </table>
+        <input type="submit" value='Aceptar'>
+
+    </form>
+{% endblock %}

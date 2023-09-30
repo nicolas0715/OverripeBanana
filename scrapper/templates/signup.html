@@ -7,16 +7,17 @@
     {% block title%}Sign Up{% endblock %}
 </head>
 <body>
-    {% block navbar1 %}
-    {% endblock %}
     
     {% block main %}
-    <h1>Registrarse</h1>
-    <form method="POST">
-        {% csrf_token %}
-        <!--{{ form.as_p }}-->
-        <button type="submit">Registrarse</button>
-    </form>
+    <div style="text-align:center; margin:50px">
+        <h1>Registrarse</h1><br>
+        <form method="POST">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit">Registrarse</button>
+        </form>
+    </div>
+    
     {% endblock %}
 </body>
 </html>

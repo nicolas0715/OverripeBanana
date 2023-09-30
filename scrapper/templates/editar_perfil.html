@@ -1,0 +1,27 @@
+{% extends "home.html" %}
+{% load static %}
+
+{% block title%}Editar Perfil{% endblock %}
+
+{% block bloque1 %}
+{% endblock %}
+
+{% block navbar1 %}
+{% endblock %}
+
+{% block main %}
+
+    <h1>Editar Usuario</h1>
+    <h2>Hola {{ usuario }}</h2>
+
+    <form action="" method='POST'>
+        {% csrf_token %}
+
+        <table>
+            {{ form.as_table}}
+        </table>
+        <input type="submit" value='Aceptar'>
+
+    </form>
+    <a href="">Cambiar Contrasena</a>
+{% endblock %}

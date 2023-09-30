@@ -26,9 +26,6 @@ class User(models.Model):
 '''
 # =====================================================================================================
 
-class UserProfile(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
-
 class Pelicula(models.Model):
     nombre_pelicula = models.CharField(max_length=255, verbose_name='Nombre_Pelicula')
     fecha_streaming = models.DateField(verbose_name='Fecha_Streaming')
@@ -36,7 +33,7 @@ class Pelicula(models.Model):
     critics_score = models.IntegerField(default=0, verbose_name='Critics Score')
     audience_score = models.IntegerField(default=0, verbose_name='Audience Score')
     user_score = models.IntegerField(blank=True, null=True, verbose_name='User Score')
-    streaming = models.CharField(max_length=30, verbose_name='Streaming')
+    streaming = models.CharField(default=' ', max_length=30, verbose_name='Streaming')
 
 class Serie(models.Model):
     nombre_serie = models.CharField(max_length=255, verbose_name='Nombre_Serie')
@@ -45,7 +42,7 @@ class Serie(models.Model):
     critics_score = models.IntegerField(default=0, verbose_name='Critics Score')
     audience_score = models.IntegerField(default=0, verbose_name='Audience Score')
     user_score = models.IntegerField(blank=True, null=True, verbose_name='User Score')
-    streaming = models.CharField(max_length=30, verbose_name='Streaming')
+    streaming = models.CharField(default=' ', max_length=30, verbose_name='Streaming')
 
 class Critica(models.Model):
     usuario = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -62,3 +59,7 @@ class PeliculasVistas(models.Model):
     usuario = models.ForeignKey(User, on_delete=models.CASCADE)
     peliculas = models.ManyToManyField(Pelicula, blank=True)
     series = models.ManyToManyField(Serie, blank=True)
+
+class Avatar(models.Model):
+    user = models.ForeignKey(User, on_delete = models.CASCADE)
+    image = models.ImageField(upload_to="avatares", null=True, blank=True)

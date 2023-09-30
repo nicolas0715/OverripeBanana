@@ -1,0 +1,85 @@
+{% extends "landing_page.html" %}
+{% block title %}Inicio{% endblock %}
+
+{% block content2%}
+
+{% endblock %}
+
+{% block content1%}
+<li class="nav-item" style="margin-left: 5px;">
+    <a class="btn btn-light" href="{% url 'perfil' %}">{{ contexto.usuario}}</a>
+</li> 
+<li class="nav-item" style="margin-left: 5px;">
+    <a class="btn btn-light" href="{% url 'logout' %}">Salir</a>
+</li> 
+{% endblock %}
+
+{% block busqueda%}
+<form class="d-flex" role="search">
+    <input class="form-control me-2" type="search" placeholder="NO FUNCIONA!" aria-label="Search">
+    <button class="btn btn-outline-success" type="submit">Search</button>
+</form>
+{% endblock %}
+
+{% block nav %}
+    <nav>
+        <ul class="nav nav-tabs justify-content-center">
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'tipo_view' tipo='pelicula' %}">Peliculas</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link " href="{% url 'tipo_view' tipo='serie' %}">Series</a>
+            </li>
+        </ul>
+    </nav>
+{% endblock %}
+
+    {% block main %}
+    <main class='main_landing'>
+
+        <div class="container">
+            <div class="row">
+                <div class="col-6 mb-4">
+                    <div id="carouselExampleAutoplaying" class="carousel slide" data-bs-ride="carousel">
+                        <div class="carousel-inner">
+                            {% for pelicula in contexto.peliculas.peliculas %}
+                                <div class="carousel-item {% if forloop.first %}active{% endif %}">
+                                    <img src="{{ pelicula.Imagen }}" class="d-block w-100" alt="{{ pelicula.Nombre_pelicula }}">
+                                </div>
+                            {% endfor %}
+                        </div>
+                        <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleAutoplaying" data-bs-slide="prev">
+                            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                            <span class="visually-hidden">Previous</span>
+                        </button>
+                        <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleAutoplaying" data-bs-slide="next">
+                            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                            <span class="visually-hidden">Next</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="col-6 mb-4">
+                    <div id="carouselExampleAutoplaying2" class="carousel slide" data-bs-ride="carousel">
+                        <div class="carousel-inner">
+                            {% for serie in contexto.series.series %}
+                                <div class="carousel-item {% if forloop.first %}active{% endif %}">
+                                    <img src="{{ serie.Imagen }}" class="d-block w-100" alt="{{ serie.Nombre_serie }}">
+                                </div>
+                            {% endfor %}
+                        </div>
+                        <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleAutoplaying2" data-bs-slide="prev">
+                            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                            <span class="visually-hidden">Previous</span>
+                        </button>
+                        <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleAutoplaying2" data-bs-slide="next">
+                            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                            <span class="visually-hidden">Next</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+    {% endblock %}

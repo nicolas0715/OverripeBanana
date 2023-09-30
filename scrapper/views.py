@@ -1,7 +1,17 @@
 from django.shortcuts import render
 from django.http import HttpResponse
 
-from .forms import UserRegistrationForm
+from django.contrib.auth.forms import AuthenticationForm
+from django.contrib.auth import login as login1
+from django.contrib.auth import authenticate
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth import logout
+from django.shortcuts import redirect
+from django.contrib.auth.models import User
+from django.contrib.auth import update_session_auth_hash
+
+from scrapper.models import *
+from scrapper.forms import *
 
 from bs4 import BeautifulSoup
 import requests
@@ -21,9 +31,13 @@ paramount_plus = "paramount_plus"
 apple_tv_us = "apple_tv_us"
 
 def landing(request):
-    contexto = {'peliculas': scrap('https://www.rottentomatoes.com/browse/movies_in_theaters/', 'pelicula'), 'series': scrap('https://www.rottentomatoes.com/browse/tv_series_browse/', 'serie')}
-    print(contexto)
-    return render(request, 'landing_page.html', {'contexto': contexto})
+    return render(request, 'landing_page.html')
+
+@login_required
+def home(request):
+    usuario = request.user
+    contexto = {'usuario': usuario, 'peliculas': scrap(request, 'https://www.rottentomatoes.com/browse/movies_in_theaters/', 'pelicula'), 'series': scrap(request, 'https://www.rottentomatoes.com/browse/tv_series_browse/', 'serie')}
+    return render(request, 'home.html', {'contexto': contexto})
 
 '''
 contexto = {
@@ -43,23 +57,22 @@ contexto = {
                         },
 }
 '''
-
+@login_required
 def tipo_view(request, tipo):
     if tipo == 'pelicula':
-        return render(request, 'peliculas.html', scrap('https://www.rottentomatoes.com/browse/movies_at_home/?page=5', 'pelicula'))
+        return render(request, 'peliculas.html', scrap(request, 'https://www.rottentomatoes.com/browse/movies_at_home/?page=5', 'pelicula'))
     elif tipo == 'serie':
-        return render(request, 'series.html', scrap('https://www.rottentomatoes.com/browse/tv_series_browse/?page=5', 'serie'))
-    else:
-        # Manejar casos no válidos, por ejemplo, devolviendo un mensaje de error
-        return HttpResponse("Tipo no válido: " + tipo, status=400)
-    
+        return render(request, 'series.html', scrap(request, 'https://www.rottentomatoes.com/browse/tv_series_browse/?page=5', 'serie'))
+
+@login_required
 def stream_view(request, tipo, stream):
     if tipo == 'pelicula':
         return render(request, 'peliculas.html', scrap(f"https://www.rottentomatoes.com/browse/movies_at_home/affiliates:{str(stream)}?page=5", 'pelicula'))
     elif tipo == 'serie':
         return render(request, 'series.html', scrap(f"https://www.rottentomatoes.com/browse/tv_series_browse/affiliates:{str(stream)}?page=5", 'serie'))
 
-def scrap(url, tipo):
+def scrap(request, url, tipo):
+    usuario = request.user
     response = requests.get(url)
     html_content = response.content
 
@@ -105,7 +118,7 @@ def scrap(url, tipo):
 
             # Agrega el diccionario a la lista de datos de películas
             datos_peliculas.append(pelicula)
-        return {'peliculas': datos_peliculas}
+        return {'usuario': usuario, 'peliculas': datos_peliculas}
         
     elif tipo == 'serie':
         for elemento in elementos:
@@ -139,18 +152,109 @@ def scrap(url, tipo):
 
             # Agrega el diccionario a la lista de datos de películas
             datos_series.append(serie)
-        return {'series': datos_series}
-
+        return {'usuario': usuario, 'series': datos_series}
+    
+#==========================Nuevo========================
 
 def login(request):
-    return render(request, 'login.html')
+
+    if request.method == "POST":
+        form = AuthenticationForm(request, data = request.POST)
+
+        if form.is_valid():
+            user = form.cleaned_data.get("username")
+            pdw = form.cleaned_data.get("password")
+            
+            user = authenticate(username = user, password = pdw)
+
+            if user is not None:
+                login1(request, user)
+                avatar = Avatar.objects.filter(user = request.user.id)
+                try:
+                    avatar = avatar[0].image.url
+                except:
+                    avatar = None
+                
+                usuario = request.user
+                
+                contexto = {'usuario': usuario, 'peliculas': scrap(request, 'https://www.rottentomatoes.com/browse/movies_in_theaters/', 'pelicula'), 'series': scrap(request, 'https://www.rottentomatoes.com/browse/tv_series_browse/', 'serie')}
+                
+                print('Todo OK')
+                return render(request, "home.html", {'contexto': contexto})
+            else:
+                return render(request, "login.html", {"form": form})
+        else:
+            return render(request, "login.html", {"form": form})
+    form = AuthenticationForm()
+    return render(request, "login.html", {"form": form})
 
 def signup(request):
+    if request.method == "POST":
+        form = UserRegisterForm(request.POST)
+        if form.is_valid():
+            print('form valid')
+#           username = form.cleaned_data["username"]
+            form.save()
+            avatar = Avatar.objects.filter(user = request.user.id)
+            try:
+                avatar = avatar[0].image.url
+            except:
+                avatar = None
+            return render(request, "home.html", {"avatar": avatar})
+        print(form.errors)
+    form = UserRegisterForm()
+    return render(request, "signup.html", {"form": form})
+
+def propio_logout(request):
+    logout(request)
+    return landing(request)
+
+
+
+
+
+
+def perfil(request):
+    usuario = request.user
+    return render(request, 'perfil.html', {'usuario': usuario})
+
+def editar_perfil(request):
+    usuario = request.user
+    user_basic_info = User.objects.get(id = usuario.id)
     if request.method == 'POST':
-        form = UserRegistrationForm(request.POST)
+        form = UserEditForm(request.POST, instance = usuario)
+        if form.is_valid():
+            user_basic_info.username = form.cleaned_data.get('username')
+            user_basic_info.email = form.cleaned_data.get('email')
+            user_basic_info.first_name = form.cleaned_data.get('first_name')
+            user_basic_info.last_name = form.cleaned_data.get('last_name')
+            user_basic_info.save()
+            return render(request, 'perfil.html')
+        else:
+            return render(request, 'editar_perfil.html', {'form': form})
+    else:
+        form = UserEditForm(initial = {'email' : usuario.email, 
+                                        'username': usuario.username, 
+                                        'first_name': usuario.first_name, 
+                                        'last_name': usuario.last_name
+                                        })
+        return render(request, 'editar_perfil.html', {'form': form, 'usuario': usuario})
+
+def cambiar_contrasena(request):
+    usuario = request.user
+    if request.method == "POST":
+#        form = PasswordChangeForm(data = request.POST, user = usuario)
+        form = ChangePasswordForm(data = request.POST, user = request.user)
         if form.is_valid():
             user = form.save()
-            return render(request, 'landing_page.html')
+            update_session_auth_hash(request, user)
+            avatar = Avatar.objects.filter(user = request.user.id)
+            try:
+                avatar = avatar[0].image.url
+            except:
+                avatar = None
+            return render(request, "perfil.html", {"avatar": avatar})
     else:
-        form = UserRegistrationForm()
-        return render(request, 'signup.html', {'form': form})
+#        form = PasswordChangeForm(request.user)
+        form = ChangePasswordForm(user = request.user)
+    return render(request, "cambiar_contrasena.html", {"form": form, "usuario": usuario})
