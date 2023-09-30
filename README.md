@@ -21,7 +21,5 @@ La idea es realizar un sitio web en el cual pueda administrar las peliculas y se
 ### Para hacer:
 * Pagina de 404 (Donde te redirecciona por si alguna url no coincide)
 * Archivo de dependencias
-* Definir la estructura de la base de datos. (Empece con el diagrama)
 * Definir la idea de poder agregar pelis o series a una lista de favoritos. (CRUD)
 * Definir la idea de poder marcar cuales peliculas o series ya he visto.
-* Terminar de definir los modelos de: Peliculas, Series y Usuarios.
