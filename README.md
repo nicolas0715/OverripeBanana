@@ -11,15 +11,21 @@ La idea es realizar un sitio web en el cual pueda administrar las peliculas y se
 ---
 
 ### Para instalarlo:
-* Primero: `git clone https://github.com/nicolas0715/OverripeBanana`
-* Segundo: `python -m venv mi_entorno_virtual`
-* Tercero: `pip install -r requirements.txt`
+* Lo primero que hay que hacer es clonar el repositorio:
+* * *`git clone https://github.com/nicolas0715/OverripeBanana`
+    
+* Despues podemos crear un entorno virtual:
+*  * *`python -m venv mi_entorno_virtual`
+     
+* Luego instalamos las dependencias del proyecto:
+* * *`pip install -r requirements.txt`
   # EN DESARROLLO
 
 ---
 
 ### Para hacer:
 * Pagina de 404 (Donde te redirecciona por si alguna url no coincide)
-* Archivo de dependencias
+* Agregar el Avatar (Imagen de perfil)
 * Definir la idea de poder agregar pelis o series a una lista de favoritos. (CRUD)
 * Definir la idea de poder marcar cuales peliculas o series ya he visto.
+* Definir la idea de poder agregar cuales peliculas o series a una watchlist (Ver Luego).
