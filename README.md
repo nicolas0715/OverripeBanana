@@ -12,10 +12,10 @@ La idea es realizar un sitio web en el cual pueda administrar las peliculas y se
 
 ### Para instalarlo:
 * Lo primero que hay que hacer es clonar el repositorio:
-  *`git clone https://github.com/nicolas0715/OverripeBanana`
+  `git clone https://github.com/nicolas0715/OverripeBanana`
     
 * Despues podemos crear un entorno virtual:
-  *`python -m venv mi_entorno_virtual`
+  `python -m venv mi_entorno_virtual`
      
 * Luego instalamos las dependencias del proyecto:
   `pip install -r requirements.txt`
