@@ -8,13 +8,13 @@
 {% block main %}
 
     <h1>Cambiar Constrasena</h1>
-    <h2>{{ usuario }}</h2>
+    <h2>{{ contexto.usuario }}</h2>
 
     <form action="" method='POST'>
         {% csrf_token %}
 
         <table>
-            {{ form.as_table}}
+            {{ contexto.form.as_table}}
         </table>
         <input type="submit" value='Aceptar'>
 

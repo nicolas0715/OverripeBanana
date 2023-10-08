@@ -23,9 +23,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-iuza8fsl9h=-r^_a2j#dkqxe-0mnu4oq&=dzlec=!ujjdn#it7'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
-ALLOWED_HOSTS = ['http://nicolasotero.pythonanywhere.com/']
+ALLOWED_HOSTS = []
 
 
 # Application definition
@@ -75,9 +75,13 @@ WSGI_APPLICATION = 'Web_Scrapping4.wsgi.application'
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+    'default': { 
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'overripedbanana',
+        'USER': 'root',
+        'PASSWORD': 'root',
+        'HOST': '127.0.0.1',  
+        'PORT': '3306',
     }
 }
 

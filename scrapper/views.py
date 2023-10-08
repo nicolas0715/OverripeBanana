@@ -10,6 +10,8 @@ from django.shortcuts import redirect
 from django.contrib.auth.models import User
 from django.contrib.auth import update_session_auth_hash
 
+from django.db import connection
+
 from scrapper.models import *
 from scrapper.forms import *
 
@@ -30,39 +32,37 @@ max_us = "max_us"
 paramount_plus = "paramount_plus"
 apple_tv_us = "apple_tv_us"
 
+
+
+
+def conectar_db():
+    try:
+        # Conectarse a la base de datos
+        connection.connect()
+        # Realizar operaciones con la base de datos aquí
+    except Exception as e:
+        # Manejar cualquier error de conexión
+        print("Error al conectar a la base de datos:", e)
+
+
 def landing(request):
+    scraping(request)
     return render(request, 'landing_page.html')
 
 @login_required
 def home(request):
     usuario = request.user
-    contexto = {'usuario': usuario, 'peliculas': scrap(request, 'https://www.rottentomatoes.com/browse/movies_in_theaters/', 'pelicula'), 'series': scrap(request, 'https://www.rottentomatoes.com/browse/tv_series_browse/', 'serie')}
+    contexto = {'usuario': usuario, 'peliculas': scrap(request, 'https://www.rottentomatoes.com/browse/movies_at_home/?page=5', 'pelicula'), 'series': scrap(request, 'https://www.rottentomatoes.com/browse/tv_series_browse/?page=5', 'serie')}
     return render(request, 'home.html', {'contexto': contexto})
 
-'''
-contexto = {
-    'peliculas': pelicula = {
-                        'Nombre_pelicula': nombre_pelicula,
-                        'Fecha_streaming': fecha_streaming,
-                        'Imagen': imagen,
-                        'Criticsscore': criticsscore,
-                        'Audiencescore': audiencescore
-                        },
-    'series': serie = {
-                        'Nombre_serie': nombre_serie,
-                        'Fecha_streaming': fecha_streaming,
-                        'Imagen': valor_imagen,
-                        'Criticsscore': criticsscore,
-                        'Audiencescore': audiencescore
-                        },
-}
-'''
 @login_required
 def tipo_view(request, tipo):
     if tipo == 'pelicula':
         return render(request, 'peliculas.html', scrap(request, 'https://www.rottentomatoes.com/browse/movies_at_home/?page=5', 'pelicula'))
     elif tipo == 'serie':
         return render(request, 'series.html', scrap(request, 'https://www.rottentomatoes.com/browse/tv_series_browse/?page=5', 'serie'))
+    else:
+        return HttpResponse("Tipo no válido", status=400)
 
 @login_required
 def stream_view(request, tipo, stream):
@@ -156,6 +156,141 @@ def scrap(request, url, tipo):
     
 #==========================Nuevo========================
 
+from scrapper.models import Pelicula, Serie
+from datetime import datetime
+
+def scraping(request):
+    # Obtener el usuario logueado
+    usuario = request.user
+    
+    # Urls para scrapear
+    urls = ['https://www.rottentomatoes.com/browse/movies_at_home/?page=5',
+            'https://www.rottentomatoes.com/browse/tv_series_browse/?page=5']
+    
+    datos_peliculas = []
+    datos_series = []
+    
+    for url in urls:
+        response = requests.get(url)
+        html_content = response.content
+        soup = BeautifulSoup(html_content, "html.parser")
+        elementos = soup.select('div.js-tile-link, a.js-tile-link')
+
+        if url == urls[0]:
+            for elemento in elementos:
+            # Extrae los datos que necesitas de cada etiqueta
+                nombre_pelicula = elemento.find('span', class_='p--small').get_text(strip=True)
+                fecha_streaming_tag = elemento.find('span', class_='smaller')
+                if fecha_streaming_tag:
+                    fecha_streaming_no_format = fecha_streaming_tag.get_text(strip=True)[10:]
+                    fecha_streaming_format = datetime.strptime(fecha_streaming_no_format, "%b %d, %Y")
+                    fecha_streaming = fecha_streaming_format.strftime("%Y-%m-%d")
+                else:
+                    # Si no se encuentra, asigna un valor por defecto
+                    fecha_streaming = None
+                imagen = elemento.find('img')['src']
+                criticsscore_tag = elemento.find('score-pairs-deprecated')
+                if criticsscore_tag and criticsscore_tag.get('criticsscore') != '':
+                    criticsscore = criticsscore_tag.get('criticsscore')
+                else:
+                    criticsscore = 0
+                    
+                audiencescore_tag = elemento.find('score-pairs-deprecated')
+                if audiencescore_tag and audiencescore_tag.get('audiencescore') != '':
+                    audiencescore = audiencescore_tag.get('audiencescore')
+                else:
+                    audiencescore = 0
+
+                pelicula = {
+                    'nombre_pelicula': nombre_pelicula,
+                    'fecha_streaming': fecha_streaming,
+                    'imagen': imagen,
+                    'critics_score': criticsscore,
+                    'audience_score': audiencescore
+                }
+
+                # Agregar las pelis a la base de datos
+                nueva_peli = Pelicula(
+                    nombre_pelicula = pelicula['nombre_pelicula'],
+                    fecha_streaming = pelicula['fecha_streaming'],
+                    imagen = pelicula['imagen'],
+                    critics_score = pelicula['critics_score'],
+                    audience_score = pelicula['audience_score'],
+                    user_score = 0,
+                    streaming = ' ',
+                )
+                
+                nombre_pelicula = pelicula['nombre_pelicula']
+                pelicula_existente = Pelicula.objects.filter(nombre_pelicula=nombre_pelicula).first()
+
+                if pelicula_existente is None:
+                    # La película no existe en la base de datos, por lo que puedes guardarla
+                    nueva_peli.save()
+                else:
+                    # La película ya existe en la base de datos, no necesitas guardarla nuevamente
+                    print(f'La película "{nombre_pelicula}" ya existe en la base de datos.')
+
+                # Agrega el diccionario a la lista de datos de películas
+                datos_peliculas.append(pelicula)
+        
+        elif url == urls[1]:
+            for elemento in elementos:
+            # Extrae los datos que necesitas de cada etiqueta
+                nombre_serie = elemento.find('span', class_='p--small').get_text(strip=True)
+                ultimo_capitulo_tag = elemento.find('span', class_='smaller')
+                if ultimo_capitulo_tag:
+                    ultimo_capitulo_no_format = ultimo_capitulo_tag.get_text(strip=True)[16:]
+                    ultimo_capitulo_format = datetime.strptime(ultimo_capitulo_no_format, '%b %d')
+                    ultimo_capitulo_format = ultimo_capitulo_format.replace(year=datetime.now().year)
+                    ultimo_capitulo = ultimo_capitulo_format.strftime("%Y-%m-%d")
+                else:
+                    # Si no se encuentra, asigna un valor por defecto
+                    ultimo_capitulo = None
+                imagen = elemento.find('img')['src']
+                criticsscore_tag = elemento.find('score-pairs-deprecated')
+                if criticsscore_tag and criticsscore_tag.get('criticsscore') != '':
+                    criticsscore = criticsscore_tag.get('criticsscore')
+                else:
+                    criticsscore = 0
+                audiencescore_tag = elemento.find('score-pairs-deprecated')
+                if audiencescore_tag and audiencescore_tag.get('audiencescore') != '':
+                    audiencescore = audiencescore_tag.get('audiencescore')
+                else:
+                    audiencescore = 0
+
+                serie = {
+                    'nombre_serie': nombre_serie,
+                    'ultimo_capitulo': ultimo_capitulo,
+                    'imagen': imagen,
+                    'criticsscore': criticsscore,
+                    'audiencescore': audiencescore
+                }
+                
+                # Agregar las series a la base de datos
+                nueva_serie = Serie(
+                    nombre_serie = serie['nombre_serie'], 
+                    ultimo_capitulo = serie['ultimo_capitulo'],
+                    imagen = serie['imagen'],
+                    critics_score = serie['criticsscore'],
+                    audience_score = serie['audiencescore'],
+                    user_score = 0,
+                    streaming = ' ',
+                )
+                
+                nombre_serie = serie['nombre_serie']
+                serie_existente = Serie.objects.filter(nombre_serie=nombre_serie).first()
+
+                if serie_existente is None:
+                    # La película no existe en la base de datos, por lo que puedes guardarla
+                    nueva_serie.save()
+                else:
+                    # La película ya existe en la base de datos, no necesitas guardarla nuevamente
+                    print(f'La serie "{nombre_serie}" ya existe en la base de datos.')
+
+                # Agrega el diccionario a la lista de datos de películas
+                datos_series.append(serie)
+    return {'usuario': usuario, 'peliculas': datos_peliculas, 'series': datos_series}
+
 def login(request):
 
     if request.method == "POST":
@@ -216,7 +351,8 @@ def propio_logout(request):
 
 def perfil(request):
     usuario = request.user
-    return render(request, 'perfil.html', {'usuario': usuario})
+    contexto = {'usuario': usuario}
+    return render(request, 'perfil.html', {'contexto': contexto})
 
 def editar_perfil(request):
     usuario = request.user
@@ -238,12 +374,12 @@ def editar_perfil(request):
                                         'first_name': usuario.first_name, 
                                         'last_name': usuario.last_name
                                         })
-        return render(request, 'editar_perfil.html', {'form': form, 'usuario': usuario})
+        contexto = {'form': form, 'usuario': usuario}
+        return render(request, 'editar_perfil.html', {'contexto': contexto})
 
 def cambiar_contrasena(request):
     usuario = request.user
     if request.method == "POST":
-#        form = PasswordChangeForm(data = request.POST, user = usuario)
         form = ChangePasswordForm(data = request.POST, user = request.user)
         if form.is_valid():
             user = form.save()
@@ -255,6 +391,6 @@ def cambiar_contrasena(request):
                 avatar = None
             return render(request, "perfil.html", {"avatar": avatar})
     else:
-#        form = PasswordChangeForm(request.user)
         form = ChangePasswordForm(user = request.user)
-    return render(request, "cambiar_contrasena.html", {"form": form, "usuario": usuario})
+        contexto = {'usuario': usuario, 'form': form}
+    return render(request, "cambiar_contrasena.html", {"contexto": contexto}) 

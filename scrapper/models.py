@@ -29,7 +29,7 @@ class User(models.Model):
 class Pelicula(models.Model):
     nombre_pelicula = models.CharField(max_length=255, verbose_name='Nombre_Pelicula')
     fecha_streaming = models.DateField(blank=True, verbose_name='Fecha_Streaming')
-    imagen = models.URLField(verbose_name='Imagen')
+    imagen = models.URLField(max_length=500, verbose_name='Imagen', null=True)
     critics_score = models.IntegerField(default=0, verbose_name='Critics Score')
     audience_score = models.IntegerField(default=0, verbose_name='Audience Score')
     user_score = models.IntegerField(blank=True, null=True, verbose_name='User Score')
@@ -37,8 +37,8 @@ class Pelicula(models.Model):
 
 class Serie(models.Model):
     nombre_serie = models.CharField(max_length=255, verbose_name='Nombre_Serie')
-    ultimo_capitulo = models.DateField(blank=True, verbose_name='Ultimo_Capitulo')
-    imagen = models.URLField(verbose_name='Imagen_Serie')
+    ultimo_capitulo = models.DateField(null=True, verbose_name='Ultimo_Capitulo')
+    imagen = models.URLField(max_length=500, verbose_name='Imagen_Serie', null=True)
     critics_score = models.IntegerField(default=0, verbose_name='Critics Score')
     audience_score = models.IntegerField(default=0, verbose_name='Audience Score')
     user_score = models.IntegerField(blank=True, null=True, verbose_name='User Score')
@@ -63,3 +63,6 @@ class PeliculasVistas(models.Model):
 class Avatar(models.Model):
     user = models.ForeignKey(User, on_delete = models.CASCADE)
     image = models.ImageField(upload_to="avatares", null=True, blank=True)
+    
+#=================================================================================================================
+

@@ -12,16 +12,16 @@
 {% block main %}
 
     <h1>Editar Usuario</h1>
-    <h2>Hola {{ usuario }}</h2>
+    <h2>Hola {{ contexto.usuario }}</h2>
 
     <form action="" method='POST'>
         {% csrf_token %}
 
         <table>
-            {{ form.as_table}}
+            {{ contexto.form.as_table}}
         </table>
         <input type="submit" value='Aceptar'>
 
     </form>
-    <a href="">Cambiar Contrasena</a>
+    <a href="{% url 'cambiar_contrasena' %}">Cambiar Contrasena</a>
 {% endblock %}

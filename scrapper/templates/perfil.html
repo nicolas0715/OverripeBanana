@@ -1,13 +1,14 @@
 {% extends "home.html" %}
 
-{% block title%}Perfil {{ usuario }}{% endblock %}
+{% block title%}Perfil {{ contexto.usuario }}{% endblock %}
 
 {% block navbar1 %}
 {% endblock %}
 
 {% block main %}
 
-    <h1>Hola {{ usuario }}</h1>
+    <h1>Hola {{ contexto.usuario }}</h1>
 
     <a href="{% url 'editar_perfil' %}">Editar Perfil</a>
+    <a href="#"><p>WatchList</p></a>
 {% endblock %}
